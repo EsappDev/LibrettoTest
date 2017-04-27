@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="LoginButton" parent="AppTheme">
+        <item name="android:layout_margin">@dimen/margin_default</item>
+    </style>
+
 </resources>
