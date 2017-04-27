@@ -28,6 +28,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final String TAG = "LoginActivity";
     Button loginButtonGoogle;
     FirebaseAuth mFirebaseAuth;
+    GoogleApiClient mGoogleApiClient;
+    private boolean TRIED_TO_LOGIN_WITH_GOOGLE = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +45,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void googleSignInProcedure() {
+        TRIED_TO_LOGIN_WITH_GOOGLE = true;
+
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -62,6 +66,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_GOOGLE_LOGIN);
+    }
+
+    @Override
+    public void onStop() {
+        if (TRIED_TO_LOGIN_WITH_GOOGLE) {
+            mGoogleApiClient.stopAutoManage(this);
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
     }
 
     @Override
